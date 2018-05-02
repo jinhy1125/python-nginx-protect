@@ -22,12 +22,14 @@ def clear_map(seconds):
 
 
 def do_fail_ban(need_ban_ip):
-    command = ('iptables -I INPUT -s %s -j DROP' % need_ban_ip)
-    subprocess.call(command)
+    deny_file = open('E:\\nginx-1.14.0\\conf\\deny.conf', 'a')
+    deny_file.write('deny %s;' % need_ban_ip)
+    deny_file.close()
+    subprocess.call('nginx -s reload')
 
 
 def write_to_html(need_ban_ip, service_path):
-    report_html = open('report.html', 'a')
+    report_html = open('403.html', 'a')
     time_tuple = time.localtime()
     report_html.write('<p>%s-%s-%s %s:%s:%s ----- ip:%s  service-path:%s<p>\n' %
                       (time_tuple[0], time_tuple[1], time_tuple[2], time_tuple[3], time_tuple[4], time_tuple[5],
