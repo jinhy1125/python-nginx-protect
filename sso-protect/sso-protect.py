@@ -22,14 +22,14 @@ def clear_map(seconds):
 
 
 def do_fail_ban(need_ban_ip):
-    deny_file = open('E:\\nginx-1.14.0\\conf\\deny.conf', 'a')
+    deny_file = open(location_deny, 'a')
     deny_file.write('deny %s;' % need_ban_ip)
     deny_file.close()
     subprocess.call('nginx -s reload')
 
 
 def write_to_html(need_ban_ip, service_path):
-    report_html = open('403.html', 'a')
+    report_html = open(location_report, 'a')
     time_tuple = time.localtime()
     report_html.write('<p>%s-%s-%s %s:%s:%s ----- ip:%s  service-path:%s<p>\n' %
                       (time_tuple[0], time_tuple[1], time_tuple[2], time_tuple[3], time_tuple[4], time_tuple[5],
@@ -43,6 +43,8 @@ limit_time = cp.get('config', 'limit_time')
 limit_count = cp.get('config', 'limit_count')
 limit_service = cp.get('config', 'limit_service')
 limit_source = cp.get('config', 'limit_source')
+location_deny = cp.get('config', 'location_deny')
+location_report = cp.get('config', 'location_report')
 
 ip_map = {}
 
