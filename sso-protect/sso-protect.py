@@ -15,15 +15,22 @@ def follow(the_file):
         yield file_line
 
 
-def clear_map(seconds):
+def clear_map_and_reload_logfile(seconds):
+    global log_file, log_lines
+    total_time = 0
     while True:
+        total_time += int(seconds)
+        if total_time / int(seconds) == 60:
+            total_time = 0
+            log_file = open(limit_source, "r")
+            log_lines = follow(log_file)
         ip_map.clear()
         time.sleep(int(seconds))
 
 
 def do_fail_ban(need_ban_ip):
     deny_file = open(location_deny, 'a')
-    deny_file.write('deny %s;' % need_ban_ip)
+    deny_file.write('deny %s;\n' % need_ban_ip)
     deny_file.close()
     subprocess.call('nginx -s reload')
 
@@ -48,7 +55,7 @@ location_report = cp.get('config', 'location_report')
 
 ip_map = {}
 
-thread = threading.Thread(target=clear_map, args=limit_time)
+thread = threading.Thread(target=clear_map_and_reload_logfile, args=limit_time)
 thread.start()
 
 log_file = open(limit_source, "r")
